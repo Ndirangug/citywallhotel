@@ -1,0 +1,8 @@
+{
+    "require": {
+        "catfan/medoo": "^1.5",
+        "smodav/ipay": "^1.1",
+        "swiftmailer/swiftmailer": "6.0",
+        "phpoffice/phpspreadsheet": "^1.4"
+    }
+}

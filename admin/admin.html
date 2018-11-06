@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Admin</title>
+<!-- Meta tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="https://www.gstatic.com/firebasejs/5.5.2/firebase.js"></script>
+<script>
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyCFhfqaeampSXzvkUgH6owFEm-NpRX_F4o",
+		authDomain: "citywallhotel-53567.firebaseapp.com",
+		databaseURL: "https://citywallhotel-53567.firebaseio.com",
+		projectId: "citywallhotel-53567",
+		storageBucket: "citywallhotel-53567.appspot.com",
+		messagingSenderId: "515107821521"
+	};
+	firebase.initializeApp(config);
+
+	firebase.auth().onAuthStateChanged(function (user) {
+			if (user) {
+				// User is signed in.
+			} else {
+				window.location.href = "index.html";
+			}
+		});
+</script>
+<link rel="stylesheet" href="../tabulator-master/tabulator-master/dist/css/tabulator.min.css">
+<script src="../tabulator-master/tabulator-master/dist/js/tabulator.min.js"></script>
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //Meta tags -->
+<!-- font-awesome-icons -->
+<link href="css/font-awesome.css" rel="stylesheet"> 
+<!-- //font-awesome-icons -->
+<!-- Stylesheet -->
+<link rel="stylesheet" href="../css/bootstrap.css">
+<link href="css/style.css" rel='stylesheet' type='text/css' />
+<!-- //Stylesheet -->
+<!--fonts--> 
+<link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+<link href="//fonts.googleapis.com/css?family=Love+Ya+Like+A+Sister" rel="stylesheet">
+<!--//fonts--> 
+</head>
+<body>
+<!--background-->
+
+    <div class="bg-agile">
+	<div class="book-appointment">
+	<h2>Manage Reservations</h2>
+
+						<div class="book-form agileits-login">
+							<ul class="nav nav-tabs nav-justified">
+								<li class="active"><a data-toggle="tab" href="#checkin">Check In</a></li>
+								<li><a data-toggle="tab" href="#checkout">Check Out</a></li>
+								<li><a data-toggle="tab" href="#cancel">Cancel A Reservation</a></li>
+								<li><a data-toggle="tab" href="#download">Download Data</a></li>
+							</ul>
+							
+							<div class="tab-content">
+								<div id="checkin" class="tab-pane fade in active">
+									<form role="form" class="form-inline" action="check_name.php" method="get">
+										<div class="form-group checkin-group">
+											<label for="reservation_ID">Reservation ID</label>
+											<input type="text" class="form-control" name="reservation_ID" id="reservation_ID">
+											<a href="#" class="btn btn-primary btn-form" onclick="check_in()">CHECK IN</a>
+										</div>
+									</form>
+								</div>
+								<div id="checkout" class="tab-pane fade">
+									<form role="form" class="form-inline" action="check_name.php" method="get">
+										<div class="form-group checkout-group">
+											<label for="reservation_ID">Reservation ID</label>
+											<input type="text" class="form-control" name="reservation_ID" id="reservation_ID">
+											<a href="#" class="btn btn-primary" id="btn-form" onclick="check_out()">CHECK OUT</a>
+										</div>
+									</form>
+								</div>
+								<div id="cancel" class="tab-pane fade">
+									<form role="form" class="form-inline" action="check_name.php" method="get">
+										<div class="form-group cancel-group">
+											<label for="reservation_ID">Reservation ID</label>
+											<input type="text" class="form-control" name="reservation_ID" id="reservation_ID">
+											<a href="#" class="btn btn-primary btn-form" onclick="cancel()">CANCEL RESERVATION</a>
+										</div>
+									</form>
+								</div>
+								<div id="download" class="tab-pane fade">
+
+									<!--vertical pills-->
+									<ul style="margin: 1em;" id="download_data" class="nav nav-pills">
+										<li class="active"><a data-toggle="pill" href="#reservations">Reservations</a></li>
+										<li><a data-toggle="pill" href="#payments">Payments</a></li>
+										
+									</ul>
+									
+									<div class="tab-content">
+										<div id="reservations" class="tab-pane fade in active">
+											<div id="reservations-table"></div>
+											<p><a target="_blank" href="all_current_reservations.php?download=1">Download Table(.xls)</a>.</p>
+										</div>
+										<div id="payments" class="tab-pane fade">
+											<div id="payments-table"></div>
+											<p><a target="_blank" href="payments.php?download=1">Download Table(.xls)</a>.</p>
+										</div>
+										
+									</div>
+
+									
+								</div>
+							</div>
+							
+						</div>
+	
+		</div>
+		<a href="#" onclick="signout()" class="btn btn-danger navbar-right">LOG OUT</a>
+   </div>
+  <!--copyright-->
+	<div class="copy w3ls">
+		<p>&copy; 2018 CityWall Hotel .   | Design by <a href="http://ndirangug.github.com/" target="_blank">George Ndirangu</a> </p>
+	</div>
+<!--//copyright-->
+		<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+		<!-- Calendar -->
+				<link rel="stylesheet" href="css/jquery-ui.css" />
+				<script src="js/jquery-ui.js"></script>
+				  <script>
+						  $(function() {
+							$( "#datepicker,#datepicker1,#datepicker2,#datepicker3" ).datepicker();
+						  });
+				  </script>
+			<!-- //Calendar -->
+
+			<script src="../js/jquery-2.1.4.min.js"></script>
+			<script src="../js/bootstrap.js"></script>
+			
+			<!--Get data-->
+			<script>
+				function check_in() {
+					inputs = document.getElementsByClassName("form-control");
+					var reservationID;
+					for (let index = 0; index < inputs.length; index++) {
+						reservationID = inputs[index].value;
+						
+						if (reservationID.length > 0) {
+							break;
+						}	
+					}
+
+
+					
+					var xmlhttp = new XMLHttpRequest();
+
+					 var url = "http://localhost/citywallhotel/admin/check_name.php?reservationID=" + reservationID;
+ 
+					xmlhttp.onreadystatechange = function () {
+						
+						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+							try {
+									var obj = JSON.parse(xmlhttp.responseText);
+
+								var r = confirm("Check in " + obj.first_name + " " + obj.last_name + "?");
+								if (r == true) {
+									var xmlhttp2 = new XMLHttpRequest();
+
+									var url2 = "http://localhost/citywallhotel/admin/checkin.php?customer_ID=" + obj.customer_ID + "&room_ID=" + obj.room_ID;
+
+									xmlhttp2.onreadystatechange = function () {
+
+										if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
+
+											var obj2 = JSON.parse(xmlhttp2.responseText);
+											alert(obj2.result);
+
+										} 
+									}
+
+									xmlhttp2.open("GET", url2, true);
+									xmlhttp2.send();
+
+								} else {
+									window.location.assign("admin.html");
+								}
+							} catch (error) {
+								console.log(error);
+								alert("No record found");
+								window.location.assign("admin.html");
+							}
+						
+
+						}
+					}
+					xmlhttp.open("GET", url, true);
+					xmlhttp.send(); 
+					
+				}
+
+
+			function check_out() {
+					inputs = document.getElementsByClassName("form-control");
+					var reservationID;
+					for (let index = 0; index < inputs.length; index++) {
+						reservationID = inputs[index].value;
+
+						if (reservationID.length > 0) {
+							break;
+						}
+					}
+
+
+
+					var xmlhttp = new XMLHttpRequest();
+
+					var url = "http://localhost/citywallhotel/admin/check_name.php?reservationID=" + reservationID;
+
+					xmlhttp.onreadystatechange = function () {
+
+						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+							try {
+								var obj = JSON.parse(xmlhttp.responseText);
+
+								var r = confirm("Check out " + obj.first_name + " " + obj.last_name + "?");
+								if (r == true) {
+									var xmlhttp2 = new XMLHttpRequest();
+
+									var url2 = "http://localhost/citywallhotel/admin/checkout.php?customer_ID=" + obj.customer_ID + "&room_ID=" + obj.room_ID;
+
+									xmlhttp2.onreadystatechange = function () {
+
+										if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
+											var obj2 = JSON.parse(xmlhttp2.responseText);
+											alert(obj2.result);
+
+										} 
+									}
+
+									xmlhttp2.open("GET", url2, true);
+									xmlhttp2.send();
+								} else {
+									window.location.assign("admin.html");
+								}
+							} catch (error) {
+								console.log(error);
+								alert("No record found");
+								window.location.assign("admin.html");
+							}
+							
+
+						}
+					}
+					xmlhttp.open("GET", url, true);
+					xmlhttp.send();
+				}
+			
+			function cancel() {
+					inputs = document.getElementsByClassName("form-control");
+					var reservationID;
+					for (let index = 0; index < inputs.length; index++) {
+						reservationID = inputs[index].value;
+
+						if (reservationID.length > 0) {
+							break;
+						}
+					}
+
+
+
+					var xmlhttp = new XMLHttpRequest();
+
+					var url = "http://localhost/citywallhotel/admin/check_name.php?reservationID=" + reservationID;
+
+					xmlhttp.onreadystatechange = function () {
+
+						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+							try {
+								var obj = JSON.parse(xmlhttp.responseText);
+
+								var r = confirm("Cancel Reservation for " + obj.first_name + " " + obj.last_name + "?");
+								if (r == true) {
+									var xmlhttp2 = new XMLHttpRequest();
+
+									var url2 = "http://localhost/citywallhotel/admin/cancel_reservation.php?reservationID=" + obj.reservationID + "&room_ID=" + obj.room_ID;
+
+									xmlhttp2.onreadystatechange = function () {
+
+										if (xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
+											var obj2 = JSON.parse(xmlhttp2.responseText);
+											alert(obj2.result);
+
+										}
+									}
+
+									xmlhttp2.open("GET", url2, true);
+									xmlhttp2.send();
+								} else {
+									window.location.assign("admin.html");
+								}	
+							} catch (error) {
+								console.log(error);
+								alert("No record found");
+								window.location.assign("admin.html");
+								
+							}
+
+							
+
+						}
+					}
+					xmlhttp.open("GET", url, true);
+					xmlhttp.send();
+				}
+				function reservations() {
+					var xmlhttp = new XMLHttpRequest();
+
+					var url = "http://localhost/citywallhotel/admin/all_current_reservations.php";
+
+					xmlhttp.onreadystatechange = function () {
+
+						if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+							try {
+								var obj = JSON.parse(xmlhttp.responseText);	
+							} catch (error) {
+								console.log(error);
+								
+								alert("Records not found");
+								window.location.assign("admin.html");
+							}
+						
+
+						} 
+					}
+					xmlhttp.open("GET", url, true);
+					xmlhttp.send(); 
+					
+				}
+			</script>
+
+
+			<script>
+				//firebase log out
+
+				function signout() {
+					firebase.auth().signOut().then(function () {
+						window.location.href("index.html");
+					}).catch(function (error) {
+						// An error happened.
+						window.location.href("index.html");
+					});
+				}
+			</script>
+
+			<script>
+				//tabulator
+
+				var table = new Tabulator("#reservations-table", {
+						height: 205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+						layout: "fitData", //autofit column with to data
+						placeholder: "No Records to show",
+						columns: [ //Define Table Columns
+							{ title: "REservation ID", field: "reservation_ID"},
+							{ title: "Date", field: "date" },
+							{ title: "Expected Checkin Date", field: "expected_checkin_date" },
+							{ title: "Expected Checkout Date", field: "expected_checkout_date" },
+							{ title: "First Name", field: "first_name" },
+							{ title: "Last Name", field: "last_name" },
+							{ title: "Room Number", field: "room_no" },
+							{ title: "Room Type", field: "type" },
+							
+						],
+						
+					});
+
+				table.setData("http://localhost/citywallhotel/admin/all_current_reservations.php");	
+
+				var table2 = new Tabulator("#payments-table", {
+						height: 205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+						layout: "fitColumns", //autofit column with to data
+						placeholder: "No Records to show",
+						columns: [ //Define Table Columns
+							{ title: "Ref", field: "ref" },
+							{ title: "Amount", field: "amount" },
+							{ title: "Time", field: "time" },
+							{ title: "Mode", field: "mode" },
+							{ title: "First Name", field: "first_name" },
+							{ title: "Last Name", field: "last_name" },
+							
+
+						],
+
+					});
+
+					table2.setData("http://localhost/citywallhotel/admin/payments.php");	
+			</script>
+			
+</body>
+</html>
+
+
+	
+	
+	
+
